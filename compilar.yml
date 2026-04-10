@@ -1,0 +1,32 @@
+name: Compilar para MacOS
+
+on: [push] # O processo roda toda vez que você enviar código para o GitHub
+
+jobs:
+  build:
+    runs-on: macos-latest # Aqui acontece a mágica: ele usa um Mac real
+
+    steps:
+    - name: Baixar código do repositório
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9' # Escolha a versão que você usa
+
+    - name: Instalar dependências
+      run: |
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Compilar com PyInstaller
+      run: |
+        # Lembre-se: no Mac usamos ":" para o --add-data
+        pyinstaller --onefile --windowed --add-data "logo.png:." main.py
+
+    - name: Guardar o executável
+      uses: actions/upload-artifact@v3
+      with:
+        name: App-MacOS
+        path: dist/main.app # Ou apenas dist/main se não for --windowed
